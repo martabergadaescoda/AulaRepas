@@ -1,0 +1,145 @@
+======================================================================
+  SNIPPET REUTILIZABLE: COOKIE BANNER + GOOGLE CONSENT MODE v2
+======================================================================
+
+DESCRIPCIÓN
+----------------------------------------
+Banner de consentimiento de cookies.
+Obligatorio según LSSI-CE art. 22.2 y RGPD (UE) 2016/679.
+Compatible con Google Consent Mode v2 (obligatorio para Analytics desde 2025).
+
+CÓMO USAR EN OTRO PROYECTO
+  1. Pegar el bloque GCM v2 en el <head> ANTES de cualquier script de Google.
+  2. Pegar el bloque HTML+JS antes del cierre </body>.
+  3. Enlazar a tus páginas de política de cookies y privacidad.
+
+VARIABLES A CAMBIAR
+  • 'aularepas_cookie_consent'  → 'tu_proyecto_cookie_consent' (3 veces en el JS)
+  • href politica-cookies.html  → ruta a tu política de cookies
+  • href politica-privacidad.html → ruta a tu política de privacidad
+
+NOTAS
+  • Sin Google Analytics: eliminar el bloque gtag() dentro de setCookieConsent().
+  • Con Google Ads: cambiar ad_storage a 'granted' cuando choice === 'accepted'.
+  • La preferencia se guarda en localStorage y persiste entre visitas.
+
+======================================================================
+  CÓDIGO
+======================================================================
+
+── BLOQUE 1/2 — GCM v2 para el <head> (antes de cualquier script Google) 
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     GOOGLE CONSENT MODE v2 — Pegar en el <head> ANTES de cualquier
+     script de Google (Analytics, Ads, GTM…).
+     ═══════════════════════════════════════════════════════════════════ -->
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag() { dataLayer.push(arguments); }
+
+  /* Valores por defecto: todo denegado hasta que el usuario elija */
+  gtag('consent', 'default', {
+    'analytics_storage':   'denied',
+    'ad_storage':          'denied',
+    'ad_user_data':        'denied',
+    'ad_personalization':  'denied',
+    'wait_for_update':     500        /* ms a esperar antes de disparar hits */
+  });
+  gtag('js', new Date());
+</script>
+
+── BLOQUE 2/2 — Banner HTML + JS para antes del cierre </body> ──────
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     COOKIE BANNER
+     Obligatorio según LSSI-CE art. 22.2 y RGPD.
+     Primera visita → banner visible. Visitas siguientes → oculto.
+     La preferencia se guarda en localStorage (clave: aularepas_cookie_consent).
+
+     Google Consent Mode v2: setCookieConsent() actualiza las señales
+     gtag() según la elección del usuario (analytics_storage granted/denied).
+     AulaRepàs no usa Google Ads, por lo que ad_* permanecen siempre denied.
+     ═══════════════════════════════════════════════════════════════════ -->
+
+<!-- Banner visible la primera visita -->
+<div id="cookie-banner" role="dialog" aria-live="polite" aria-label="Aviso de cookies" style="
+  display:none;
+  position:fixed; bottom:0; left:0; right:0; z-index:99999;
+  background:#0d1b2a; color:rgba(255,255,255,0.85);
+  padding:1.25rem 2rem; font-family:'DM Sans',sans-serif; font-size:0.85rem;
+  border-top:3px solid #e63946;
+  flex-wrap:wrap; align-items:center; gap:1rem; justify-content:space-between;
+">
+  <p style="margin:0; max-width:700px; line-height:1.6;">
+    🍪 Utilizamos cookies propias para el correcto funcionamiento de la web. No utilizamos cookies de terceros ni de publicidad. Consulta nuestra
+    <a href="politica-cookies.html" style="color:#2a9d8f; text-decoration:underline;">Política de Cookies</a>
+    y nuestra
+    <a href="politica-privacidad.html" style="color:#2a9d8f; text-decoration:underline;">Política de Privacidad</a>.
+  </p>
+  <div style="display:flex; gap:0.75rem; flex-shrink:0;">
+    <!-- Botón Rechazar: solo cookies estrictamente necesarias -->
+    <button onclick="setCookieConsent('rejected')" style="
+      background:transparent; border:1.5px solid rgba(255,255,255,0.3);
+      color:rgba(255,255,255,0.7); padding:0.6rem 1.2rem; border-radius:6px;
+      cursor:pointer; font-family:'DM Sans',sans-serif; font-size:0.82rem; font-weight:500;
+      transition:all 0.2s;
+    " onmouseover="this.style.borderColor='white';this.style.color='white'"
+       onmouseout="this.style.borderColor='rgba(255,255,255,0.3)';this.style.color='rgba(255,255,255,0.7)'">
+      Solo necesarias
+    </button>
+    <!-- Botón Aceptar todas -->
+    <button onclick="setCookieConsent('accepted')" style="
+      background:#e63946; border:none; color:white;
+      padding:0.6rem 1.4rem; border-radius:6px;
+      cursor:pointer; font-family:'DM Sans',sans-serif; font-size:0.82rem; font-weight:700;
+      transition:all 0.2s;
+    " onmouseover="this.style.background='#c1121f'"
+       onmouseout="this.style.background='#e63946'">
+      Aceptar todas
+    </button>
+  </div>
+</div>
+
+<script>
+  // ─────────────────────────────────────────────────────────────────────
+  // GESTIÓN DEL CONSENTIMIENTO DE COOKIES
+  // Lee la preferencia guardada; si no existe, muestra el banner.
+  // ─────────────────────────────────────────────────────────────────────
+  (function () {
+    var consent = localStorage.getItem('aularepas_cookie_consent');
+    if (!consent) {
+      // Primera visita: mostrar el banner
+      document.getElementById('cookie-banner').style.display = 'flex';
+    }
+  })();
+
+  // ─────────────────────────────────────────────────────────────────────
+  // setCookieConsent(choice)
+  // Llamada desde los botones del banner.
+  // choice: 'accepted' | 'rejected'
+  //
+  // Google Consent Mode v2:
+  //   - analytics_storage → 'granted' solo si el usuario acepta
+  //   - ad_* → siempre 'denied' (AulaRepàs no usa Google Ads)
+  // ─────────────────────────────────────────────────────────────────────
+  function setCookieConsent(choice) {
+    localStorage.setItem('aularepas_cookie_consent', choice);
+    document.getElementById('cookie-banner').style.display = 'none';
+
+    // Actualizar señales de Google Consent Mode v2
+    if (typeof gtag === 'function') {
+      gtag('consent', 'update', {
+        'analytics_storage':   choice === 'accepted' ? 'granted' : 'denied',
+        'ad_storage':          'denied',
+        'ad_user_data':        'denied',
+        'ad_personalization':  'denied'
+      });
+    }
+  }
+</script>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+
+======================================================================
+  FIN DEL SNIPPET
+======================================================================

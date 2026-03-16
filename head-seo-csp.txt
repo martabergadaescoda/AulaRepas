@@ -1,0 +1,209 @@
+======================================================================
+  SNIPPET REUTILIZABLE: HEAD COMPLETO — SEO + CSP + GCM v2 + SCHEMA.ORG
+======================================================================
+
+DESCRIPCIÓN
+----------------------------------------
+Bloque <head> completo con todas las capas de optimización.
+Listo para reemplazar el <head> de cualquier landing page.
+
+CONTIENE (en orden)
+  1. Meta básico (charset, viewport)
+  2. SEO on-page: title (máx 60 car), description (máx 160 car), canonical, robots
+  3. Open Graph: previsualización en Facebook, LinkedIn, WhatsApp
+  4. Twitter Card: previsualización en X (Twitter)
+  5. Hreflang: señales de idioma para Google (ES / CA)
+  6. CSP (Content Security Policy): protección XSS
+  7. Google Consent Mode v2: señales de consentimiento por defecto
+  8. Schema.org JSON-LD: datos estructurados (EducationalOrganization + LocalBusiness)
+  9. Google Fonts con preconnect
+
+VARIABLES A CAMBIAR
+  • <title>               → keyword principal + ciudad
+  • <meta description>    → descripción única del negocio (máx 160 car)
+  • <link canonical>      → URL canónica del sitio
+  • og:url / og:title     → URL y título para redes sociales
+  • og:image (añadir)     → imagen 1200×630px para máximo impacto al compartir
+  • hreflang href         → URL canónica
+  • CSP connect-src       → dominio de tu instancia n8n
+  • CSP frame-src         → dominio de tu instancia n8n
+  • Schema.org            → nombre, dirección, teléfono, email, horario del negocio
+  • Google Fonts          → cambiar familias tipográficas si el proyecto lo requiere
+
+======================================================================
+  CÓDIGO
+======================================================================
+
+── BLOQUE COMPLETO — Todo el <head> ─────────────────────────────────
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     META BÁSICO
+     ═══════════════════════════════════════════════════════════════════ -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     SEO ON-PAGE
+     title    → máx. 60 car. | incluye keyword principal + ciudad
+     description → máx. 160 car. | CTA implícito, diferenciador
+     robots   → indexación normal
+     canonical → evita contenido duplicado si se añaden parámetros URL
+     ═══════════════════════════════════════════════════════════════════ -->
+<title>AulaRepàs – Academia de Repaso en Sabadell | ESO · Bachillerato · Universidad</title>
+<meta name="description"
+      content="Academia de repaso en Sabadell (Barcelona). Clases de apoyo para Primaria, ESO, Bachillerato y Universidad. Grupos reducidos, atención personalizada y coaching educativo con Marta Bergadà.">
+<meta name="robots" content="index, follow">
+<meta name="author" content="Marta Bergadà Escoda – AulaRepàs">
+<link rel="canonical" href="https://webaularepas.netlify.app/">
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     OPEN GRAPH (Facebook, LinkedIn, WhatsApp…)
+     ═══════════════════════════════════════════════════════════════════ -->
+<meta property="og:type"               content="website">
+<meta property="og:url"                content="https://webaularepas.netlify.app/">
+<meta property="og:title"              content="AulaRepàs – Academia de Repaso en Sabadell">
+<meta property="og:description"        content="Clases de apoyo para Primaria, ESO, Bachillerato y Universidad en Sabadell. Grupos reducidos y coaching educativo personalizado.">
+<meta property="og:locale"             content="es_ES">
+<meta property="og:locale:alternate"   content="ca_ES">
+<meta property="og:site_name"          content="AulaRepàs">
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     TWITTER CARD
+     ═══════════════════════════════════════════════════════════════════ -->
+<meta name="twitter:card"        content="summary_large_image">
+<meta name="twitter:title"       content="AulaRepàs – Academia de Repaso en Sabadell">
+<meta name="twitter:description" content="Clases de apoyo para Primaria, ESO, Bachillerato y Universidad en Sabadell. Grupos reducidos y coaching educativo personalizado.">
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     HREFLANG
+     Indica a Google las versiones de idioma disponibles en la misma URL.
+     (La web sirve ES y CA desde la misma página vía JS; se declaran ambas.)
+     ═══════════════════════════════════════════════════════════════════ -->
+<link rel="alternate" hreflang="es"    href="https://webaularepas.netlify.app/">
+<link rel="alternate" hreflang="ca"    href="https://webaularepas.netlify.app/">
+<link rel="alternate" hreflang="x-default" href="https://webaularepas.netlify.app/">
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     CONTENT SECURITY POLICY (CSP)
+     Protege contra XSS e inyecciones de scripts de terceros no autorizados.
+
+     default-src    → todo denegado salvo excepciones explícitas
+     script-src     → solo scripts propios (inline necesario para GCM v2 y chatbot)
+                      + Google Tag Manager (preparado para Analytics futuro)
+     style-src      → estilos propios (inline) + Google Fonts CSS
+     font-src       → fuentes de Google Fonts
+     img-src        → imágenes propias, data URIs y cualquier HTTPS (para OG images)
+     connect-src    → fetch al webhook n8n del chatbot + Google Analytics (futuro)
+     frame-src      → iframe del formulario nativo de n8n
+     frame-ancestors→ evita que la landing se incruste en iframes externos (clickjacking)
+     ═══════════════════════════════════════════════════════════════════ -->
+<meta http-equiv="Content-Security-Policy" content="
+  default-src 'self';
+  script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com;
+  style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+  font-src 'self' https://fonts.gstatic.com;
+  img-src 'self' data: https:;
+  connect-src 'self'
+    https://n8n-n8n.61ntpt.easypanel.host
+    https://www.google-analytics.com
+    https://region1.google-analytics.com;
+  frame-src https://n8n-n8n.61ntpt.easypanel.host;
+  frame-ancestors 'none';
+">
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     GOOGLE CONSENT MODE v2
+     OBLIGATORIO para cumplir con las directrices de Google desde 2025.
+     Debe cargarse ANTES de cualquier tag de Google (Analytics, Ads…).
+
+     Estado por defecto → TODO DENEGADO hasta que el usuario elija.
+     La función setCookieConsent() (ver sección Cookie Banner) actualiza
+     estas señales cuando el usuario pulsa "Aceptar" o "Solo necesarias".
+
+     Nota: AulaRepàs no usa Google Ads actualmente. Los parámetros
+     ad_storage, ad_user_data y ad_personalization se dejan en 'denied'
+     por defecto y no se actualizan al aceptar (solo analytics_storage).
+     ═══════════════════════════════════════════════════════════════════ -->
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag() { dataLayer.push(arguments); }
+
+  // Valores por defecto: todo denegado hasta que el usuario elija
+  gtag('consent', 'default', {
+    'analytics_storage':   'denied',
+    'ad_storage':          'denied',
+    'ad_user_data':        'denied',
+    'ad_personalization':  'denied',
+    'wait_for_update':     500        // ms a esperar antes de disparar hits
+  });
+  gtag('js', new Date());
+</script>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     SCHEMA.ORG – DATOS ESTRUCTURADOS (JSON-LD)
+     Ayuda a Google a mostrar rich snippets: nombre, dirección, teléfono,
+     tipo de negocio. No requiere GTM ni Analytics.
+     Tipo: EducationalOrganization (más específico que LocalBusiness)
+     ═══════════════════════════════════════════════════════════════════ -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": ["EducationalOrganization", "LocalBusiness"],
+  "name": "AulaRepàs",
+  "alternateName": "Aula Repàs",
+  "description": "Academia de repaso en Sabadell. Clases de apoyo para Primaria, ESO, Bachillerato y Universidad. Grupos reducidos, atención personalizada y coaching educativo.",
+  "url": "https://webaularepas.netlify.app",
+  "telephone": "+34686143541",
+  "email": "martabergadaescoda@gmail.com",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "C/ Jaume I, 10",
+    "addressLocality": "Sabadell",
+    "addressRegion": "Barcelona",
+    "postalCode": "08206",
+    "addressCountry": "ES"
+  },
+  "geo": {
+    "@type": "GeoCoordinates",
+    "latitude": 41.5432,
+    "longitude": 2.1093
+  },
+  "openingHoursSpecification": [
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday"],
+      "opens": "09:00",
+      "closes": "21:00"
+    }
+  ],
+  "areaServed": {
+    "@type": "City",
+    "name": "Sabadell"
+  },
+  "knowsLanguage": ["es", "ca"],
+  "founder": {
+    "@type": "Person",
+    "name": "Marta Bergadà Escoda"
+  }
+}
+</script>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     GOOGLE FONTS
+     preconnect → establece la conexión TCP/TLS con antelación (mejora LCP)
+     crossorigin → requerido para fuentes de dominio cruzado
+     ═══════════════════════════════════════════════════════════════════ -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     CSS PRINCIPAL – LANDING PAGE
+
+======================================================================
+  FIN DEL SNIPPET
+======================================================================

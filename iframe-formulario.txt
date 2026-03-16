@@ -1,0 +1,170 @@
+======================================================================
+  SNIPPET REUTILIZABLE: IFRAME FORMULARIO n8n
+======================================================================
+
+DESCRIPCIÓN
+----------------------------------------
+Sección de contacto con formulario embebido via iframe desde n8n.
+Sin instalación de librerías. El iframe carga el formulario nativo de n8n.
+
+CÓMO USAR EN OTRO PROYECTO
+  1. Pegar el bloque CSS dentro del <head>.
+  2. Pegar el bloque HTML como una <section> en el <body>.
+
+VARIABLES A CAMBIAR
+  • src del <iframe>  → URL del formulario nativo de n8n
+      Ejemplo: https://tu-n8n.dominio.com/form/NombreFormulario
+  • Datos de contacto (teléfono, email, dirección) dentro del HTML.
+  • color de .form-iframe-label → adaptar al color corporativo.
+
+NOTAS TÉCNICAS
+  • El atributo loading="lazy" mejora el rendimiento de carga inicial.
+  • Si el formulario n8n tiene múltiples pasos, aumentar min-height a 600-700px.
+  • Añadir el dominio n8n al CSP del <head>:
+      frame-src https://tu-n8n.dominio.com
+  • El iframe NO hereda los estilos de la landing (encapsulado completo).
+    Para estilar el formulario, editar el tema directamente en n8n.
+
+======================================================================
+  CÓDIGO
+======================================================================
+
+── CSS — Pegar dentro del <head> ────────────────────────────────────
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     CSS – CONTENEDOR IFRAME FORMULARIO n8n
+     Estilos del wrapper del formulario de contacto embebido vía iframe.
+     El iframe apunta al formulario nativo de n8n (no necesita librería).
+     ═══════════════════════════════════════════════════════════════════ -->
+<!-- ── ESTILOS DEL CONTENEDOR DEL FORMULARIO ─────────────────────────── -->
+<style>
+  /* Contenedor principal que envuelve el iframe */
+  .form-iframe-wrapper {
+    background: #ffffff;
+    border-radius: 16px;
+    overflow: hidden;                   /* Evita que el iframe sobresalga del borde */
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.10);
+    border: 1px solid #e9ecef;
+    min-height: 520px;                  /* Altura mínima para el formulario multi-página */
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  /* Etiqueta de estado encima del iframe */
+  .form-iframe-label {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #2a9d8f;                     /* Verde corporativo, coherente con la landing */
+    padding: 0.6rem 1.25rem;
+    background: rgba(42, 157, 143, 0.07);
+    border-bottom: 1px solid #e9ecef;
+  }
+
+  /* El iframe ocupa todo el espacio del contenedor */
+  .form-iframe-wrapper iframe {
+    width: 100%;
+    flex: 1;
+    border: none;                       /* Elimina el borde nativo del iframe */
+    min-height: 500px;
+    border-radius: 0 0 16px 16px;
+    display: block;
+  }
+
+  /* Texto de carga mientras el iframe no ha renderizado */
+  .form-loading-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #6c757d;
+    font-size: 0.88rem;
+    font-family: 'DM Sans', sans-serif;
+    pointer-events: none;               /* No bloquea clicks cuando el iframe carga */
+    z-index: 0;
+  }
+</style>
+
+── HTML — Sección de contacto completa con iframe ───────────────────
+
+<section id="contacto">
+  <div class="container">
+    <div class="fade-in">
+      <span class="section-label">Estamos aquí</span>
+      <h2 class="section-title">Contacto</h2>
+      <p class="section-sub">Escríbenos o llámanos. Estaremos encantados de resolver todas tus dudas.</p>
+    </div>
+    <div class="contact-grid fade-in">
+      <div class="contact-info">
+        <div class="contact-item">
+          <div class="contact-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          </div>
+          <div>
+            <h4>Dirección</h4>
+            <p>C/ Jaume I, nº 10, despatx 5<br>08206 Sabadell</p>
+          </div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.06 1.23 2 2 0 012 .06h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z"/></svg>
+          </div>
+          <div>
+            <h4>Teléfono</h4>
+            <a href="tel:+34686143541">686 143 541</a>
+          </div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          </div>
+          <div>
+            <h4>Email</h4>
+            <a href="/cdn-cgi/l/email-protection#761b170402171413041117121713051519121736111b171f1a5815191b"><span class="__cf_email__" data-cfemail="157874676174777067727471747066767a7174557278747c793b767a78">[email&#160;protected]</span></a>
+          </div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <div>
+            <h4>Horario de Atención</h4>
+            <p>Lun-Mié 17:00–19:00<br>Mar-Jue 18:00–20:00</p>
+          </div>
+        </div>
+      </div>
+      <div class="form-iframe-wrapper">
+
+  <!-- Indicador visual de que el formulario está activo y conectado a n8n -->
+  <div class="form-iframe-label">📋 Formulario de contacto · Conectado a AulaRepàs CRM</div>
+
+  <!-- Texto de carga (visible solo mientras el iframe no termina de cargar) -->
+  <span class="form-loading-text">Cargando formulario…</span>
+
+  <!--
+    IFRAME PRINCIPAL
+    ─────────────────────────────────────────────────────────────────
+    src           → URL del formulario nativo de n8n (producción)
+    title         → Accesibilidad (lectores de pantalla)
+    loading       → "lazy" = el iframe carga solo cuando es visible en pantalla
+    allow         → Permisos del navegador (cámara/micrófono por compatibilidad)
+    onload        → Oculta el texto de carga una vez que el iframe ha cargado
+    ─────────────────────────────────────────────────────────────────
+  -->
+  <iframe
+    src="https://n8n-n8n.61ntpt.easypanel.host/form/AulaRepas"
+    title="Formulario de contacto AulaRepàs"
+    loading="lazy"
+    allow="camera; microphone"
+    onload="this.previousElementSibling.style.display='none'">
+  </iframe>
+
+</div>
+<!-- ── FIN SNIPPET FORMULARIO ─────────────────────────────────────────── -->
+
+======================================================================
+  FIN DEL SNIPPET
+======================================================================
